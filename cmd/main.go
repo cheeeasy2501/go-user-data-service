@@ -15,6 +15,10 @@ func main() {
 
 	mysqlCnf := db.NewConfig()
 	mysql := db.NewMysql(mysqlCnf)
+	err := mysql.Open()
+	if err != nil {
+		//return
+	}
 
 	userRepo := r.NewUserRepo(mysql)
 
