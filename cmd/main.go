@@ -17,5 +17,6 @@ func main() {
 	userRepo := r.NewUserRepo(mysql)
 
 	router := mux.NewRouter()
-	router.HandleFunc("api/users", userRepo.GetAll())
+	router.HandleFunc("api/users", userRepo.GetAll()).Methods("GET")
+	router.HandleFunc("api/user", userRepo.Get()).Methods("GET")
 }
