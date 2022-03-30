@@ -23,12 +23,12 @@ func main() {
 	userRepo := r.NewUserRepo(mysql)
 
 	router := mux.NewRouter()
-	router.HandleFunc("api/users", userRepo.GetAll()).Methods("GET")
-	router.HandleFunc("api/user", userRepo.Get()).Methods("GET")
+	router.HandleFunc("/api/users", userRepo.GetAll()).Methods("GET")
+	router.HandleFunc("/api/user", userRepo.Get()).Methods("GET")
 
 	srv := s.NewServer(router)
-	err := http.ListenAndServe(":8080", srv)
+	err = http.ListenAndServe(":8080", srv)
 	if err != nil {
-		return
+		fmt.Println(err)
 	}
 }
