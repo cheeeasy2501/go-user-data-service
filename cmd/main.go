@@ -11,7 +11,7 @@ import (
 func main() {
 	fmt.Println("User Data Service Started")
 
-	mysqlCnf := &db.Config{}
+	mysqlCnf := db.NewConfig()
 	mysql := db.NewMysql(mysqlCnf)
 
 	userRepo := r.NewUserRepo(mysql)
