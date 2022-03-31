@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mysql:
+    build:
+      context: .
+      dockerfile: build/mysql.dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: golang
+    ports:
+      - "3306:3306"
+    volumes:
+      - golang-docker-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+    networks:
+      - app
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./migrations:/migrations
+    command: [ "-path", "/migrations", "-database",  "mysql://root:root@tcp(mysql:3306)/golang", "up" ]
+    depends_on:
+      - mysql
+#    links:
+#      - mysql
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  golang-docker-data:
