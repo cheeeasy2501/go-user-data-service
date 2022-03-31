@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	m "github.com/cheeeasy2501/user-data-service/internal/model"
+	"github.com/cheeeasy2501/user-data-service/pkg/db"
 	"log"
-	m "user-data-service/internal/model"
-	"user-data-service/pkg/db"
 )
 
 type UserRepository struct {

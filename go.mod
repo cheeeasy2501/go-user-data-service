@@ -1,4 +1,4 @@
-module user-data-service
+module github.com/cheeeasy2501/user-data-service
 
 go 1.18
 

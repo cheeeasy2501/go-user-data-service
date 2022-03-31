@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	h "github.com/cheeeasy2501/user-data-service/internal/handler"
+	m "github.com/cheeeasy2501/user-data-service/internal/middleware"
+	r "github.com/cheeeasy2501/user-data-service/internal/repository"
+	"github.com/cheeeasy2501/user-data-service/pkg/db"
+	s "github.com/cheeeasy2501/user-data-service/pkg/sever"
 	"log"
 	"net/http"
-	h "user-data-service/internal/handler"
-	m "user-data-service/internal/middleware"
-	r "user-data-service/internal/repository"
-	"user-data-service/pkg/db"
-	s "user-data-service/pkg/sever"
 
 	"github.com/gorilla/mux"
 )

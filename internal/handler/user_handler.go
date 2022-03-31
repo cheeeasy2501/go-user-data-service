@@ -3,10 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	m "github.com/cheeeasy2501/user-data-service/internal/model"
+	r "github.com/cheeeasy2501/user-data-service/internal/repository"
 	"net/http"
 	"strconv"
-	m "user-data-service/internal/model"
-	r "user-data-service/internal/repository"
 )
 
 type UserHandler struct {
