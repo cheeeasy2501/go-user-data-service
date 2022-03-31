@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	h "user-data-service/internal/handler"
-	"user-data-service/internal/middleware"
+	m "user-data-service/internal/middleware"
 	r "user-data-service/internal/repository"
 	"user-data-service/pkg/db"
 	s "user-data-service/pkg/sever"
@@ -36,9 +36,9 @@ func main() {
 }
 
 func RegisterUserRoutes(router *mux.Router, h *h.UserHandler) {
-	router.HandleFunc("/api/users", middleware.DefaultHeaders(h.GetAll())).Methods("GET")
-	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Get())).Methods("GET")
-	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Create())).Methods("POST")
-	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Update())).Methods("PATCH")
-	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Delete())).Methods("DELETE")
+	router.HandleFunc("/api/users", m.DefaultHeaders(h.GetAll())).Methods("GET")
+	router.HandleFunc("/api/user", m.DefaultHeaders(h.Get())).Methods("GET")
+	router.HandleFunc("/api/user", m.DefaultHeaders(h.Create())).Methods("POST")
+	router.HandleFunc("/api/user", m.DefaultHeaders(h.Update())).Methods("PATCH")
+	router.HandleFunc("/api/user", m.DefaultHeaders(h.Delete())).Methods("DELETE")
 }
