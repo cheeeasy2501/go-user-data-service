@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	m "user-data-service/internal/model"
@@ -57,7 +58,7 @@ func (ur *UserRepository) GetAll() ([]m.User, error) {
 	return users, nil
 }
 
-func (ur *UserRepository) GetById(id uint64) m.User {
+func (ur *UserRepository) GetById(id uint64) (m.User, error) {
 	var user m.User
 
 	query := fmt.Sprintf("SELECT id, email, firstName, lastName, active FROM users WHERE id=%d", id)
@@ -77,11 +78,11 @@ func (ur *UserRepository) GetById(id uint64) m.User {
 		&user.LastName,
 		&user.Active)
 
-	if err != nil {
-		// TODO set error into writer
+	if err != nil && err == sql.ErrNoRows {
+		return user, err
 	}
 
-	return user
+	return user, nil
 }
 
 func (ur *UserRepository) GetByEmail(email string) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	h "user-data-service/internal/handler"
 	r "user-data-service/internal/repository"
@@ -18,7 +19,7 @@ func main() {
 	mysql := db.NewMysql(mysqlCnf)
 	err := mysql.Open()
 	if err != nil {
-		//return
+		log.Fatal(err)
 	}
 
 	userRepo := r.NewUserRepo(mysql)

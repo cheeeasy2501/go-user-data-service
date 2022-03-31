@@ -33,22 +33,38 @@ func (uh *UserHandler) GetAll() http.HandlerFunc {
 
 func (uh *UserHandler) Get() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
+
+		idParam := request.URL.Query().Get("id")
+
+		if len(idParam) < 1 {
+			http.Error(writer, "Id parameter not found", http.StatusBadRequest)
+			return
+		}
+
+		id, err := strconv.ParseUint(idParam, 10, 64)
 
 		if err != nil {
-			// TODO set error into writer
+			http.Error(writer, "Internal Error", http.StatusInternalServerError)
+			return
 		}
 
 		if id < 0 {
-			// TODO set error into writer
+			http.Error(writer, "User not found", http.StatusInternalServerError)
+			return
 		}
 
-		user := uh.Repo.GetById(id)
+		user, err := uh.Repo.GetById(id)
+
+		if err != nil {
+			http.Error(writer, "User not found", http.StatusNotFound)
+			return
+		}
 
 		err = json.NewEncoder(writer).Encode(&user)
 
 		if err != nil {
-			// TODO set error into writer
+			http.Error(writer, "Internal Error", http.StatusInternalServerError)
+			return
 		}
 	}
 }

@@ -5,5 +5,8 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	return &Config{}
+	//TODO not working .env
+	return &Config{
+		DatabaseURL: "root:root@(localhost:3306)/golang",
+	}
 }
