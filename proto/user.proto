@@ -1,0 +1,27 @@
+///protoc -I=./ --go_out=./ --go-grpc_out=./ proto/user.proto
+// где -I= текущий стартовый каталог
+// --go_out куда скинуть сгенерировать user.pb.go
+// --go-grpc_out куда сгенерировать user_grpc.pb.go
+// proto/user.proto - путь до proto-файла
+syntax = "proto3";
+
+package user_grpc;
+
+option go_package = "./grpc/user";
+
+service UserService {
+  rpc GetUserData(GetUserRequest) returns (GeUserResponse);
+}
+
+message GetUserRequest {
+  uint64 id = 1;
+}
+
+message GeUserResponse {
+  uint64 id = 1;
+  string email = 2;
+  string password = 3;
+  string firstName = 4;
+  string lastName = 5;
+  bool  active = 6;
+}
