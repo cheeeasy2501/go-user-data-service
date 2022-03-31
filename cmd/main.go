@@ -27,6 +27,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/users", userHandler.GetAll()).Methods("GET")
 	router.HandleFunc("/api/user", userHandler.Get()).Methods("GET")
+	router.HandleFunc("/api/user", userHandler.Create()).Methods("POST")
 
 	srv := s.NewServer(router)
 	err = http.ListenAndServe(":8080", srv)

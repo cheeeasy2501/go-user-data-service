@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
+	m "user-data-service/internal/model"
 	r "user-data-service/internal/repository"
 )
 
@@ -21,12 +21,12 @@ func (uh *UserHandler) GetAll() http.HandlerFunc {
 		users, err := uh.Repo.GetAll()
 
 		if err != nil {
-			log.Println(err)
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
 		}
 
 		err = json.NewEncoder(writer).Encode(&users)
 		if err != nil {
-			log.Println(err)
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
 		}
 	}
 }
@@ -35,6 +35,7 @@ func (uh *UserHandler) Get() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 
 		idParam := request.URL.Query().Get("id")
+		//emailParam := request.URL.Query().Get("email")
 
 		if len(idParam) < 1 {
 			http.Error(writer, "Id parameter not found", http.StatusBadRequest)
@@ -65,6 +66,28 @@ func (uh *UserHandler) Get() http.HandlerFunc {
 		if err != nil {
 			http.Error(writer, "Internal Error", http.StatusInternalServerError)
 			return
+		}
+	}
+}
+
+func (uh *UserHandler) Create() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		var user m.User
+
+		err := json.NewDecoder(request.Body).Decode(&user)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+		}
+
+		user, err = uh.Repo.Create(user)
+
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+		}
+
+		err = json.NewEncoder(writer).Encode(&user)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
 		}
 	}
 }
