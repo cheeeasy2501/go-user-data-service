@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	m "user-data-service/internal/model"
@@ -33,25 +34,13 @@ func (uh *UserHandler) GetAll() http.HandlerFunc {
 
 func (uh *UserHandler) Get() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-
 		idParam := request.URL.Query().Get("id")
 		//emailParam := request.URL.Query().Get("email")
 
-		if len(idParam) < 1 {
-			http.Error(writer, "Id parameter not found", http.StatusBadRequest)
-			return
-		}
-
-		id, err := strconv.ParseUint(idParam, 10, 64)
+		id, err, status := uh.checkIdParameter(idParam)
 
 		if err != nil {
-			http.Error(writer, "Internal Error", http.StatusInternalServerError)
-			return
-		}
-
-		if id < 0 {
-			http.Error(writer, "User not found", http.StatusInternalServerError)
-			return
+			http.Error(writer, err.Error(), status)
 		}
 
 		user, err := uh.Repo.GetById(id)
@@ -72,7 +61,7 @@ func (uh *UserHandler) Get() http.HandlerFunc {
 
 func (uh *UserHandler) Create() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		var user m.User
+		var user *m.User
 
 		err := json.NewDecoder(request.Body).Decode(&user)
 		if err != nil {
@@ -90,4 +79,63 @@ func (uh *UserHandler) Create() http.HandlerFunc {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 		}
 	}
+}
+
+func (uh *UserHandler) Update() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		var user *m.User
+
+		err := json.NewDecoder(request.Body).Decode(&user)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+		}
+
+		user, err = uh.Repo.Update(user)
+
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+		}
+
+		err = json.NewEncoder(writer).Encode(&user)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+		}
+	}
+}
+
+func (uh *UserHandler) Delete() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		idParam := request.URL.Query().Get("id")
+
+		id, err, status := uh.checkIdParameter(idParam)
+
+		if err != nil {
+			http.Error(writer, err.Error(), status)
+		}
+
+		err = uh.Repo.Delete(&id)
+
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+		}
+	}
+}
+
+func (uh UserHandler) checkIdParameter(idParam string) (uint64, error, int) {
+
+	if len(idParam) < 1 {
+		return 0, errors.New("Id parameter not found"), http.StatusBadRequest
+	}
+
+	id, err := strconv.ParseUint(idParam, 10, 64)
+
+	if err != nil {
+		return 0, errors.New("Internal Error"), http.StatusInternalServerError
+	}
+
+	if id < 0 {
+		return 0, errors.New("User not found"), http.StatusInternalServerError
+	}
+
+	return id, nil, 0
 }

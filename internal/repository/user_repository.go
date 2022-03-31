@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	m "user-data-service/internal/model"
@@ -24,13 +24,13 @@ func (ur *UserRepository) GetAll() ([]m.User, error) {
 
 	query := "SELECT id, email, firstName, lastName, active FROM users  LIMIT 20"
 
-	stmt, err := ur.mysql.Conn.Prepare(query)
+	stmt, err := ur.mysql.Conn.PrepareContext(context.TODO(), query)
 
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := stmt.Query()
+	rows, err := stmt.QueryContext(context.TODO())
 
 	if err != nil {
 		return nil, err
@@ -59,17 +59,17 @@ func (ur *UserRepository) GetAll() ([]m.User, error) {
 	return users, nil
 }
 
-func (ur *UserRepository) GetById(id uint64) (m.User, error) {
+func (ur *UserRepository) GetById(id uint64) (*m.User, error) {
 	var user m.User
 
-	query := fmt.Sprintf("SELECT id, email, firstName, lastName, active FROM users WHERE id=%d", id)
-	stmt, err := ur.mysql.Conn.Prepare(query)
+	query := "SELECT id, email, firstName, lastName, active FROM users WHERE id=?"
+	stmt, err := ur.mysql.Conn.PrepareContext(context.TODO(), query)
 
 	if err != nil {
-		return user, err
+		return &user, err
 	}
 
-	row := stmt.QueryRow()
+	row := stmt.QueryRowContext(context.TODO(), id)
 
 	err = row.Scan(
 		&user.Id,
@@ -79,23 +79,23 @@ func (ur *UserRepository) GetById(id uint64) (m.User, error) {
 		&user.Active)
 
 	if err != nil && err == sql.ErrNoRows {
-		return user, err
+		return &user, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
-func (ur *UserRepository) GetByEmail(email string) (m.User, error) {
+func (ur *UserRepository) GetByEmail(email string) (*m.User, error) {
 	var user m.User
 
 	query := fmt.Sprintf("SELECT id, email, firstName, lastName, active FROM users WHERE email=%s", email)
-	stmt, err := ur.mysql.Conn.Prepare(query)
+	stmt, err := ur.mysql.Conn.PrepareContext(context.TODO(), query)
 
 	if err != nil {
-		return user, err
+		return &user, err
 	}
 
-	row := stmt.QueryRow()
+	row := stmt.QueryRowContext(context.TODO())
 
 	err = row.Scan(
 		&user.Id,
@@ -105,49 +105,89 @@ func (ur *UserRepository) GetByEmail(email string) (m.User, error) {
 		&user.Active)
 
 	if err != nil && err == sql.ErrNoRows {
-		return user, err
+		return &user, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
-func (ur *UserRepository) Create(m m.User) (m.User, error) {
+func (ur *UserRepository) Create(m *m.User) (*m.User, error) {
 	//query := fmt.Sprintf("INSERT INTO users VALUES (%d,%s,%s,%s,%s,%d)", m.Id, m.Email, m.Password, m.FirstName, m.LastName, m.Active)
 	query := "INSERT INTO users (`email`, `password`, `firstName`, `lastName`, `active`) VALUES (?,?,?,?,?)"
 
-	stmt, err := ur.mysql.Conn.Prepare(query)
+	stmt, err := ur.mysql.Conn.PrepareContext(context.TODO(), query)
 	defer stmt.Close()
 
 	if err != nil {
 		return m, err
 	}
 
-	res, err := stmt.Exec(m.Email, m.Password, m.FirstName, m.LastName, m.Active)
+	res, err := stmt.ExecContext(context.TODO(), m.Email, m.Password, m.FirstName, m.LastName, m.Active)
 
 	if err != nil {
 		return m, err
 	}
 
-	row, err := res.RowsAffected()
-	fmt.Println(row)
+	rows, err := res.RowsAffected()
+
 	if err != nil {
 		log.Printf("Error %s when finding rows affected", err)
 		return m, err
 	}
-	log.Printf("%d user created ", row)
+	log.Printf("%d user created ", rows)
 
 	return m, nil
 }
 
-func (ur *UserRepository) Update() {
-}
+func (ur *UserRepository) Update(m *m.User) (*m.User, error) {
+	query := "UPDATE users SET firstName=?, lastName=? WHERE id=?"
+	stmt, err := ur.mysql.Conn.PrepareContext(context.TODO(), query)
 
-func (u *UserRepository) Delete(id uint64) error {
-
-	if id <= 0 {
-		fmt.Println("user id = ", id)
-		return nil
+	if err != nil {
+		return m, err
 	}
 
-	return errors.New("Id < 0")
+	res, err := stmt.ExecContext(
+		context.Background(),
+		m.FirstName,
+		m.LastName,
+		m.Id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := res.RowsAffected()
+
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return m, err
+	}
+	log.Printf("%d user updated ", rows)
+
+	return m, nil
+}
+
+func (ur *UserRepository) Delete(id *uint64) error {
+	query := "DELETE FROM users WHERE id=?"
+	stmt, err := ur.mysql.Conn.PrepareContext(context.TODO(), query)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := stmt.ExecContext(context.TODO(), id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return err
+	}
+	log.Printf("%d user deleted ", rows)
+
+	return nil
 }

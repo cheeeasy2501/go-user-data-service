@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	h "user-data-service/internal/handler"
+	"user-data-service/internal/middleware"
 	r "user-data-service/internal/repository"
 	"user-data-service/pkg/db"
 	s "user-data-service/pkg/sever"
@@ -23,15 +24,21 @@ func main() {
 	}
 
 	userRepo := r.NewUserRepo(mysql)
-	userHandler := h.NewUserHandler(userRepo)
+	userH := h.NewUserHandler(userRepo)
 	router := mux.NewRouter()
-	router.HandleFunc("/api/users", userHandler.GetAll()).Methods("GET")
-	router.HandleFunc("/api/user", userHandler.Get()).Methods("GET")
-	router.HandleFunc("/api/user", userHandler.Create()).Methods("POST")
+	RegisterUserRoutes(router, userH)
 
 	srv := s.NewServer(router)
 	err = http.ListenAndServe(":8080", srv)
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func RegisterUserRoutes(router *mux.Router, h *h.UserHandler) {
+	router.HandleFunc("/api/users", middleware.DefaultHeaders(h.GetAll())).Methods("GET")
+	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Get())).Methods("GET")
+	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Create())).Methods("POST")
+	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Update())).Methods("PATCH")
+	router.HandleFunc("/api/user", middleware.DefaultHeaders(h.Delete())).Methods("DELETE")
 }
