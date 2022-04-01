@@ -17,15 +17,17 @@ func NewClient() *GRPCClient {
 	return &GRPCClient{}
 }
 
-func (c *GRPCClient) Open() {
+func (c *GRPCClient) Open() error {
 	//TODO CHECK LIB OR METHOD LAZYLOAD FOR GRPC CONN.
 	conn, err := grpc.Dial(":8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Println("Connection not open!", err)
+		return err
 	}
 
 	c.Conn = conn
 	c.Client = NewUserServiceClient(c.Conn)
+
+	return nil
 }
 
 func (c *GRPCClient) Close() {

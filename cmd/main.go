@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	grpc_user "github.com/cheeeasy2501/go-user-data-service/grpc/user"
+	grpcUser "github.com/cheeeasy2501/go-user-data-service/grpc/user"
 	h "github.com/cheeeasy2501/go-user-data-service/internal/handler"
 	m "github.com/cheeeasy2501/go-user-data-service/internal/middleware"
 	r "github.com/cheeeasy2501/go-user-data-service/internal/repository"
@@ -34,9 +34,8 @@ func main() {
 	srv := s.NewServer(router)
 
 	grpcS := grpc.NewServer()
-	//TODO create NewGRPCServer method and insert user repo
-	grpcUserSrv := &grpc_user.GRPCServer{}
-	grpc_user.RegisterUserServiceServer(grpcS, grpcUserSrv)
+	grpcUserSrv := grpcUser.NewGRPCServer(userRepo)
+	grpcUser.RegisterUserServiceServer(grpcS, grpcUserSrv)
 
 	//GRPC START
 	go func() {

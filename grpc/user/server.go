@@ -4,25 +4,22 @@ import (
 	"context"
 	"errors"
 	r "github.com/cheeeasy2501/go-user-data-service/internal/repository"
-	"github.com/cheeeasy2501/go-user-data-service/pkg/db"
 )
 
 type GRPCServer struct {
 	UnimplementedUserServiceServer
+	ur *r.UserRepository
 }
 
-//TODO create NewGRPCServer method and insert user repo
+func NewGRPCServer(ur *r.UserRepository) *GRPCServer {
+	return &GRPCServer{
+		ur: ur,
+	}
+}
 func (s *GRPCServer) mustEmbedUnimplementedAdderServer() {}
 
 // GetUserData ...
 func (s *GRPCServer) GetUserData(ctx context.Context, req *GetUserRequest) (*GetUserResponse, error) {
-	cnf := db.NewConfig()
-	mysql := db.NewMysql(cnf)
-	err := mysql.Open()
-	if err != nil {
-		return nil, err
-	}
-	userRepo := r.NewUserRepo(mysql)
 	response := &GetUserResponse{}
 
 	id := req.GetId()
@@ -31,7 +28,7 @@ func (s *GRPCServer) GetUserData(ctx context.Context, req *GetUserRequest) (*Get
 		return response, errors.New("Invalid id")
 	}
 
-	user, err := userRepo.GetById(id)
+	user, err := s.ur.GetById(id)
 
 	if err != nil {
 		return response, err
