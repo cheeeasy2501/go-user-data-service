@@ -34,6 +34,7 @@ func main() {
 	srv := s.NewServer(router)
 
 	grpcS := grpc.NewServer()
+	//TODO create NewGRPCServer method and insert user repo
 	grpcUserSrv := &grpc_user.GRPCServer{}
 	grpc_user.RegisterUserServiceServer(grpcS, grpcUserSrv)
 

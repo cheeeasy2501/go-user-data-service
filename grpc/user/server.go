@@ -11,6 +11,7 @@ type GRPCServer struct {
 	UnimplementedUserServiceServer
 }
 
+//TODO create NewGRPCServer method and insert user repo
 func (s *GRPCServer) mustEmbedUnimplementedAdderServer() {}
 
 // GetUserData ...
