@@ -37,7 +37,7 @@ func (uh *UserHandler) Get() http.HandlerFunc {
 		idParam := request.URL.Query().Get("id")
 		//emailParam := request.URL.Query().Get("email")
 
-		id, err, status := uh.checkIdParameter(idParam)
+		id, err, status := checkIdParameter(idParam)
 
 		if err != nil {
 			http.Error(writer, err.Error(), status)
@@ -107,7 +107,7 @@ func (uh *UserHandler) Delete() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		idParam := request.URL.Query().Get("id")
 
-		id, err, status := uh.checkIdParameter(idParam)
+		id, err, status := checkIdParameter(idParam)
 
 		if err != nil {
 			http.Error(writer, err.Error(), status)
@@ -121,7 +121,7 @@ func (uh *UserHandler) Delete() http.HandlerFunc {
 	}
 }
 
-func (uh UserHandler) checkIdParameter(idParam string) (uint64, error, int) {
+func checkIdParameter(idParam string) (uint64, error, int) {
 
 	if len(idParam) < 1 {
 		return 0, errors.New("Id parameter not found"), http.StatusBadRequest

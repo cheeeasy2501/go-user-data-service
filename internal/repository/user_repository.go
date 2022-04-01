@@ -62,7 +62,7 @@ func (ur *UserRepository) GetAll() ([]m.User, error) {
 func (ur *UserRepository) GetById(id uint64) (*m.User, error) {
 	var user m.User
 
-	query := "SELECT id, email, firstName, lastName, active FROM users WHERE id=?"
+	query := "SELECT id, email, password, firstName, lastName, active FROM users WHERE id=?"
 	stmt, err := ur.mysql.Conn.PrepareContext(context.TODO(), query)
 
 	if err != nil {
@@ -74,6 +74,7 @@ func (ur *UserRepository) GetById(id uint64) (*m.User, error) {
 	err = row.Scan(
 		&user.Id,
 		&user.Email,
+		&user.Password,
 		&user.FirstName,
 		&user.LastName,
 		&user.Active)

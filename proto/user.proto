@@ -10,14 +10,14 @@ package user_grpc;
 option go_package = "./grpc/user";
 
 service UserService {
-  rpc GetUserData(GetUserRequest) returns (GeUserResponse);
+  rpc GetUserData(GetUserRequest) returns (GetUserResponse);
 }
 
 message GetUserRequest {
   uint64 id = 1;
 }
 
-message GeUserResponse {
+message GetUserResponse {
   uint64 id = 1;
   string email = 2;
   string password = 3;
