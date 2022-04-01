@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	h "github.com/cheeeasy2501/user-data-service/internal/handler"
-	m "github.com/cheeeasy2501/user-data-service/internal/middleware"
-	r "github.com/cheeeasy2501/user-data-service/internal/repository"
-	"github.com/cheeeasy2501/user-data-service/pkg/db"
-	s "github.com/cheeeasy2501/user-data-service/pkg/sever"
+	h "github.com/cheeeasy2501/go-user-data-service/internal/handler"
+	m "github.com/cheeeasy2501/go-user-data-service/internal/middleware"
+	r "github.com/cheeeasy2501/go-user-data-service/internal/repository"
+	"github.com/cheeeasy2501/go-user-data-service/pkg/db"
+	s "github.com/cheeeasy2501/go-user-data-service/pkg/sever"
 	"log"
 	"net/http"
 

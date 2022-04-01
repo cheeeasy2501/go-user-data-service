@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	m "github.com/cheeeasy2501/user-data-service/internal/model"
-	"github.com/cheeeasy2501/user-data-service/pkg/db"
+	m "github.com/cheeeasy2501/go-user-data-service/internal/model"
+	"github.com/cheeeasy2501/go-user-data-service/pkg/db"
 	"log"
 )
 

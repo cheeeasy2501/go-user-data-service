@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	m "github.com/cheeeasy2501/user-data-service/internal/model"
-	r "github.com/cheeeasy2501/user-data-service/internal/repository"
+	m "github.com/cheeeasy2501/go-user-data-service/internal/model"
+	r "github.com/cheeeasy2501/go-user-data-service/internal/repository"
 	"net/http"
 	"strconv"
 )
