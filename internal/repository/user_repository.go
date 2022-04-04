@@ -70,7 +70,6 @@ func (ur *UserRepository) GetById(id uint64) (*m.User, error) {
 	}
 
 	row := stmt.QueryRowContext(context.TODO(), id)
-
 	err = row.Scan(
 		&user.Id,
 		&user.Email,
@@ -82,6 +81,8 @@ func (ur *UserRepository) GetById(id uint64) (*m.User, error) {
 	if err != nil && err == sql.ErrNoRows {
 		return &user, err
 	}
+
+	stmt.Close()
 
 	return &user, nil
 }

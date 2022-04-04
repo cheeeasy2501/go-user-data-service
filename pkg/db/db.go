@@ -20,7 +20,7 @@ func NewMysql(cnf *Config) *Mysql {
 func (mysql *Mysql) Open() error {
 
 	conn, err := sql.Open("mysql", mysql.cnf.DatabaseURL)
-
+	conn.SetMaxOpenConns(151)
 	if err != nil {
 		return err
 	}
